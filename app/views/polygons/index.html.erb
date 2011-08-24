@@ -1,0 +1,148 @@
+<% content_for(:head) do %>
+<script type="text/javascript">
+  var austin = new google.maps.LatLng(30.2671530, -97.74306079999999);
+
+  var index = 0;
+  var points = [];
+
+  var info = [];
+
+  var polygon;
+
+  var map;
+  var infoWindow;
+
+  function initialize() {
+    var mapOptions = {
+      zoom: 13,
+      center: austin,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+
+    map = new google.maps.Map($("#wide_map_canvas")[0], mapOptions);
+
+    infoWindow = new google.maps.InfoWindow();
+
+    showPolygons();
+
+    polygon = new google.maps.Polygon({
+      paths: points,
+      strokeColor: "#FF0000",
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: "#FF0000",
+      fillOpacity: 0.35
+    });
+
+    polygon.setMap(map);
+
+    google.maps.event.addListener(map, 'click', function(event) {
+      points.push(event.latLng);
+      polygon.setPath(points);
+
+      $("#polygon_points_attributes_" + index + "_lat").val(event.latLng.lat());
+      $("#polygon_points_attributes_" + index + "_lng").val(event.latLng.lng());
+
+      index++;
+      addRow();
+
+      placeMarker(event.latLng);
+    });
+  }
+
+  function addRow() {
+    var new_row =
+      '<tr>' +
+        '<td><input id="polygon_points_attributes_' + index + '_lat" name="polygon[points_attributes][' + index + '][lat]" size="12" type="text" /></td>' +
+        '<td><input id="polygon_points_attributes_' + index + '_lng" name="polygon[points_attributes][' + index + '][lng]" size="12" type="text" /></td>' +
+      '</tr>'
+    
+    $('#points > tbody:last').append(new_row);
+  }
+
+  function placeMarker(location) {
+    var marker = new google.maps.Marker({
+      position: location,
+      map: map,
+      icon: "images/reddot.png",
+    });
+  }
+
+  function showPolygons() {
+    <% @polygons.each do |poly| %>
+      var path<%= poly.id %> = [
+        <% poly.points.each do |point| %>
+        new google.maps.LatLng(<%= point.lat %>, <%= point.lng %>),
+        <% end %>
+      ];
+
+      var poly<%= poly.id %> = new google.maps.Polygon({
+        paths: path<%= poly.id %>,
+        strokeColor: "<%= poly.stroke_color %>",
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: "<%= poly.fill_color %>",
+        fillOpacity: 0.35
+      });
+
+      poly<%= poly.id %>.setMap(map);
+
+      info<%= poly.id %> = '<div id="info">';
+
+      info<%= poly.id %> += "Name: <%= poly.name %><br />";
+
+      info<%= poly.id %> += '<form method="post" action="/polygons/<%= poly.id %>" class="button-to"><div><input name="_method" type="hidden" value="delete" /><input onclick="return confirm("Are you sure?");" type="submit" value="Destroy" /><input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>" /></div></form></div>';
+
+      info[<%= poly.id %>] = info<%= poly.id %>;
+
+      google.maps.event.addListener(poly<%= poly.id %>, 'click', function() {
+        infoWindow.setContent(info[<%= poly.id %>]);
+        infoWindow.setPosition(new google.maps.LatLng( <%= poly.points.first.lat %>, <%= poly.points.first.lng %>));
+        infoWindow.open(map);
+      });
+
+    <% end %>
+  }
+
+  $(document).ready(function() {
+    initialize();
+  });
+</script>
+<% end %>
+
+<div id="left_col_wrapper"><div id="left_col">
+  <div id="wide_map_canvas"></div>
+</div></div>
+
+<div id="right_col">
+  <%= form_for @polygon do |f| %>
+    <p>
+      <%= f.label :name %><br />
+      <%= f.text_field :name %><br />
+    </p>
+    <p>
+      <%= f.label :stroke_color %><br />
+      <%= f.text_field :stroke_color %><br />
+    </p>
+    <p>
+      <%= f.label :fill_color %><br />
+      <%= f.text_field :fill_color %><br />
+    </p>
+    <table id="points">
+      <tr><td>Lat</td><td>Lng</td></tr>
+      <%= f.fields_for :points do |point_form| %>
+      <tr>
+        <td><%= point_form.text_field :lat, :size => 12 %></td>
+        <td><%= point_form.text_field :lng, :size => 12 %></td>
+      </tr>
+      <% end %>
+    </table>
+    <p>
+      <%= f.submit 'Add Region' %>
+    </p>
+  <% end %>
+  <p>
+    <%= link_to 'Cancel', polygons_path %>
+  </p>
+</div>
+

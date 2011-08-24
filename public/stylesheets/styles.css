@@ -1,0 +1,77 @@
+/* Resets */
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6,
+p, blockquote, pre, a, abbr, address, cite, code, del, dfn, em,
+img, ins, kbd, q, samp, small, strong, sub, sup, var, b, i,
+dl, dt, dd, ol, ul, li, fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figure, figcaption, hgroup,
+menu, footer, header, nav, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+article, aside, canvas, figure, figure img, figcaption, hgroup,
+footer, header, nav, section, audio, video {
+  display: block;
+}
+
+a img { border: 0; }
+
+figure { position: relative; }
+figure img { width: 100%; }
+
+/* Fonts and layout */
+body {
+  font: 13px/16px Helvetica, Arial, sans-serif;
+}
+
+header {
+  width: 100%;
+}
+
+header h1 {
+  padding: 15px 10px;
+}
+
+footer {
+  clear: left;
+  width: 100%;
+}
+
+p {
+  padding: 10px 10px 5px 10px;
+}
+
+table {
+  padding: 10px 10px 5px 10px;
+}
+
+#container {
+}
+
+#left_col_wrapper {
+  float: left;
+  width: 100%;
+}
+
+#left_col {
+  /* width of right col + 20px map margin */
+  margin-right: 320px;
+}
+
+#right_col {
+  background: #eee;
+  float: left;
+  margin-right: 10px;
+  margin-left: -300px;
+  width: 290px;
+}
+
+#wide_map_canvas {
+  border: 1px solid #333;
+  height: 500px;
+  margin: 0 10px;
+  width: 100%;
+}
+
