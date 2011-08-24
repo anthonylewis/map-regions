@@ -64,15 +64,20 @@
     var marker = new google.maps.Marker({
       position: location,
       map: map,
-      icon: "images/reddot.png",
+      icon: "images/reddot.png"
     });
   }
 
   function showPolygons() {
     <% @polygons.each do |poly| %>
       var path<%= poly.id %> = [
-        <% poly.points.each do |point| %>
+        <% poly.points.each_with_index do |point,i| %>
+          <%# IE chokes on trailing commas in arrays... %>
+          <% if i < poly.points.length - 1 %>
         new google.maps.LatLng(<%= point.lat %>, <%= point.lng %>),
+          <% else %>
+        new google.maps.LatLng(<%= point.lat %>, <%= point.lng %>)
+          <% end %>
         <% end %>
       ];
 
